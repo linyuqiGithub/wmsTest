@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.wms.mapper.StockOutcomebillMapper">
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+    <resultMap id="BaseResultMap" type="com._520it.wms.domain.StockOutcomebill">
+        <id column="id" property="id"/>
+        <result column="sn" property="sn"/>
+        <result column="vdate" property="vdate"/>
+        <result column="status" property="status"/>
+        <result column="auditTime" property="auditTime"/>
+        <result column="inputTime" property="inputTime"/>
+        <result column="totalAmount" property="totalAmount"/>
+        <result column="totalNumber" property="totalNumber"/>
+
+        <association property="auditor" javaType="com._520it.wms.domain.Employee">
+            <id column="auditor_id" property="id"/>
+            <result column="auditor_name" property="name"/>
+        </association>
+        <association property="depot" javaType="com._520it.wms.domain.Depot">
+            <id column="depot_id" property="id"/>
+            <result column="depot_name" property="name"/>
+        </association>
+        <association property="inputUser" javaType="com._520it.wms.domain.Employee">
+            <id column="inputUser_id" property="id"/>
+            <result column="inputUser_name" property="name"/>
+        </association>
+        <association property="client" javaType="com._520it.wms.domain.Client">
+            <id column="client_id" property="id"/>
+            <result column="client_name" property="name"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="baseItemResultMap" type="com._520it.wms.domain.StockOutcomebillItem">
+        <id column="id" property="id"/>
+        <result column="costPrice" property="salePrice"/>
+        <result column="number" property="number"/>
+        <result column="amount" property="amount"/>
+        <result column="remark" property="remark"/>
+        <association property="product" column="product_id" select="com._520it.wms.mapper.ProductMapper.get"/>
+    </resultMap>
+    <delete id="delete" parameterType="long">
+    delete from stockOutcomebill where id = #{id}
+  </delete>
+    <insert id="save" parameterType="com._520it.wms.domain.StockOutcomebill" useGeneratedKeys="true" keyProperty="id">
+    insert into stockOutcomebill
+    (sn,auditor_id,vdate,status,auditTime,inputTime,depot_id,totalAmount,totalNumber,inputUser_id,client_id)
+    values 
+    (#{sn},#{auditor.id},#{vdate},#{status},#{auditTime},#{inputTime},#{depot.id},#{totalAmount},#{totalNumber},#{inputUser.id},#{client.id})
+  </insert>
+    <update id="update" parameterType="com._520it.wms.domain.StockOutcomebill">
+    update stockOutcomebill
+    set
+	     sn=#{sn},
+	    vdate=#{vdate},
+	    totalAmount=#{totalAmount},
+	    totalNumber=#{totalNumber},
+	    depot_id=#{depot.id},
+	    client_id=#{client.id}
+    where id = #{id}
+  </update>
+    <select id="get" resultMap="BaseResultMap" parameterType="long">
+        <include refid="select_sql"/>
+        <include refid="from_sql"/>
+        WHERE bill.id = #{id}
+    </select>
+    <select id="listAll" resultMap="BaseResultMap">
+    select * from stockOutcomebill
+  </select>
+    <sql id="select_sql">
+        SELECT bill.*,
+        inputUser.id inputUser_id,
+        inputUser.name inputUser_name,
+        auditor.id auditor_id,
+        auditor.name auditor_name,
+        depot.id depot_id,
+        depot.name depot_name,
+        client.id client_id,
+        client.name client_name
+    </sql>
+    <sql id="from_sql">
+        FROM stockOutcomebill bill
+        LEFT JOIN employee inputUser ON bill.inputUser_id = inputUser.id
+        LEFT JOIN employee auditor ON bill.auditor_id = auditor.id
+        LEFT JOIN depot ON bill.depot_id = depot.id
+        LEFT JOIN client ON bill.client_id = client.id
+    </sql>
+    <sql id="conditionSql">
+        <where>
+            <if test="beginDate != null">
+                and vdate &gt;= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and vdate &lt;= #{endDate}
+            </if>
+            <if test="depotId > 0">
+                and depot_id = #{depotId}
+            </if>
+            <if test="clientId > 0">
+                and client_id = #{clientId}
+            </if>
+            <if test="status != -1">
+                and status = #{status}
+            </if>
+        </where>
+    </sql>
+    <select id="queryByConditionCount" resultType="long">
+        select count(*)
+        <include refid="from_sql"/>
+        <include refid="conditionSql"/>
+    </select>
+    <select id="queryByCondition" resultMap="BaseResultMap">
+        <include refid="select_sql"/>
+        <include refid="from_sql"/>
+        <include refid="conditionSql"/>
+        limit #{start},#{pageSize}
+    </select>
+    <insert id="saveItem" parameterType="com._520it.wms.domain.StockOutcomebillItem" useGeneratedKeys="true" keyProperty="id">
+        insert into stockOutcomebillItem (salePrice,number,amount,remark,product_id,bill_id)
+        values
+        (#{salePrice},#{number},#{amount},#{remark},#{product.id},#{bill.id});
+    </insert>
+    <select id="selectItemsBybillId" resultMap="baseItemResultMap" parameterType="long">
+           SELECT * FROM stockOutcomebillItem WHERE bill_id = #{billId}
+    </select>
+    <delete id="deleteItemBybillId" parameterType="long">
+        DELETE FROM stockOutcomebillItem WHERE bill_id = #{id}
+    </delete>
+
+    <update id="audit" parameterType="com._520it.wms.domain.StockOutcomebill">
+        UPDATE stockOutcomebill
+        SET
+        status = 1,
+        auditTime = #{auditTime},
+        auditor_id = #{auditor.id}
+        where id = #{id}
+    </update>
+</mapper>

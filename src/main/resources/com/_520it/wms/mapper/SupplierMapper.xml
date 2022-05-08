@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.wms.mapper.SupplierMapper" >
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+  <resultMap id="BaseResultMap" type="com._520it.wms.domain.Supplier" >
+    <id column="id" property="id"  />
+	<result column="address" property="address"  />
+	<result column="phone" property="phone"  />
+	<result column="name" property="name"  />
+  </resultMap>
+  <delete id="delete" parameterType="long" >
+    delete from supplier where id = #{id}
+  </delete>
+  <insert id="save" parameterType="com._520it.wms.domain.Supplier" useGeneratedKeys="true" keyProperty="id" >
+    insert into supplier 
+    (address,phone,name)
+    values 
+    (#{address},#{phone},#{name})
+  </insert>
+  <update id="update" parameterType="com._520it.wms.domain.Supplier" >
+    update supplier
+    set
+	    address=#{address},
+	    phone=#{phone},
+	    name=#{name}
+    where id = #{id}
+  </update>
+  <select id="get" resultMap="BaseResultMap" parameterType="long" >
+    select * from supplier where id = #{id}
+  </select>
+  <select id="listAll" resultMap="BaseResultMap" >
+    select * from supplier
+  </select>
+  <sql id="conditionSql">
+  	<where>
+  	</where>
+  </sql>
+  <select id="queryByConditionCount" resultType="long">
+  	select count(*) from supplier
+  	<include refid="conditionSql"/>
+  </select>
+  <select id="queryByCondition" resultMap="BaseResultMap">
+  	select * from supplier
+  	<include refid="conditionSql"/>
+  	limit #{start},#{pageSize}
+  </select>
+</mapper>

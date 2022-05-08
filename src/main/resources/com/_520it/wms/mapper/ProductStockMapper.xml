@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.wms.mapper.ProductStockMapper" >
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+  <resultMap id="BaseResultMap" type="com._520it.wms.domain.ProductStock" >
+    <id column="id" property="id"  />
+	<result column="amount" property="amount"  />
+	<result column="outcomeDate" property="outcomeDate"  />
+	<result column="storeNumber" property="storeNumber"  />
+	<result column="price" property="price"  />
+	<result column="incomeDate" property="incomeDate"  />
+      <association property="product" column="product_id" javaType="com._520it.wms.domain.Product">
+          <id column="product_id" property="id"/>
+          <result column="product_name" property="name"/>
+          <result column="product_sn" property="sn"/>
+          <!--在一个association中可以嵌套另一个association,用于生成该association的关联对象,报错没有关系-->
+          <association property="brand" column="brand_id" select="com._520it.wms.mapper.BrandMapper.get"/>
+          </association>
+      <association property="depot" column="depot_id" javaType="com._520it.wms.domain.Depot">
+          <id column="depot_id" property="id"/>
+          <result column="depot_name" property="name"/>
+      </association>
+  </resultMap>
+  <delete id="delete" parameterType="long" >
+    delete from productStock where id = #{id}
+  </delete>
+  <insert id="save" parameterType="com._520it.wms.domain.ProductStock" useGeneratedKeys="true" keyProperty="id" >
+    insert into productStock 
+    (amount,product_id,outcomeDate,storeNumber,price,depot_id,incomeDate)
+    values 
+    (#{amount},#{product.id},#{outcomeDate},#{storeNumber},#{price},#{depot.id},#{incomeDate})
+  </insert>
+  <update id="update" parameterType="com._520it.wms.domain.ProductStock" >
+    update productStock
+    set
+	    amount=#{amount},
+	    product_id=#{product.id},
+	    outcomeDate=#{outcomeDate},
+	    storeNumber=#{storeNumber},
+	    price=#{price},
+	    depot_id=#{depot.id},
+	    incomeDate=#{incomeDate}
+    where id = #{id}
+  </update>
+  <select id="get" resultMap="BaseResultMap" parameterType="long" >
+    <include refid="select_sql"/>
+      <include refid="from_sql"/>
+      WHERE ps.id = #{id}
+  </select>
+  <select id="listAll" resultMap="BaseResultMap" >
+    select * from productStock
+  </select>
+  <sql id="conditionSql">
+  	<where>
+        <if test="keyword != null and keyword !=''">
+            and (p.sn LIKE concat('%',#{keyword},'%') or p.name LIKE concat('%',#{keyword},'%'))
+        </if>
+        <if test="depotId >0">
+            and d.id = #{depotId}
+        </if>
+        <if test="brandId >0">
+            and p.brand_id = #{brandId}
+        </if>
+        <if test="limitNum!=null and limitNum !=''">
+            and storeNumber &lt;= #{limitNum}
+        </if>
+  	</where>
+  </sql>
+    <!--虽然即时库存中没有品牌数据,但是由于高级查询中需要根据品牌信息进行查询,所以需要连接品牌表生成品牌对象-->
+    <sql id="select_sql">
+        SELECT ps.*,
+        p.id product_id,
+        p.name product_name,
+        p.sn product_sn,
+        p.brand_id brand_id,
+        d.id depot_id,
+        d.name depot_name
+    </sql>
+    <sql id="from_sql">
+        FROM productStock ps
+        LEFT JOIN product p ON ps.product_id = p.id
+        LEFT JOIN depot d ON ps.depot_id = d.id
+    </sql>
+  <select id="queryByConditionCount" resultType="long">
+  	select count(*)
+    <include refid="from_sql"/>
+  	<include refid="conditionSql"/>
+  </select>
+  <select id="queryByCondition" resultMap="BaseResultMap">
+  	<include refid="select_sql"/>
+    <include refid="from_sql"/>
+  	<include refid="conditionSql"/>
+      <if test="start != null and pageSize != null">
+          limit #{start},#{pageSize}
+      </if>
+  </select>
+    <select id="queryBydepotAndProduct" resultMap="BaseResultMap">
+        <include refid="select_sql"/>
+        <include refid="from_sql"/>
+        WHERE d.id = #{depotId} AND p.id = #{productId}
+    </select>
+</mapper>

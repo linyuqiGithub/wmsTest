@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com._520it.wms.mapper.PermissionMapper">
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+   <insert id="save" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+      INSERT INTO permission VALUES(null,#{expression},#{name})
+   </insert>
+     
+    <delete id="delete">
+      delete from permission where id = #{id}
+    </delete>
+    
+    
+    <select id="list" resultType="com._520it.wms.domain.Permission">
+          select * from permission  
+    </select>
+    
+    <select id="queryByConditionCount" resultType="long">
+     select count(*) from permission 
+    </select>
+    
+    <select id="queryByCondition" resultType="com._520it.wms.domain.Permission">
+      select * from permission 
+     limit #{start},#{pageSize}
+    </select>
+    
+    <select id="selectByRoleId" resultType="com._520it.wms.domain.Permission">
+         select * from permission where id in (select permissionId from role_permission where roleId = #{id})
+    </select>
+    
+    <select id="selectByEmployeeId" resultType="com._520it.wms.domain.Permission" >
+        select * from permission where id in
+          ( select permissionId from role_permission where roleId in
+           ( select roleId from employee_role where empId = #{empId} ) )
+    </select>
+
+    <update id="deleteRelation">
+        delete from role_permission where permissionId = #{id}
+    </update>
+
+
+    <delete id="batchDelete">
+        DELETE FROM permission WHERE id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+ </mapper>
+  

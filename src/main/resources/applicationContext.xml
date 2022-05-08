@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd"
+        >
+      <!-- 1.导入外部配置信息,数据库相关配置信息等 -->
+      <context:property-placeholder location="classpath:dbcp.properties" system-properties-mode="NEVER" />
+
+      <!-- 2.配置数据库连接池 -->
+      <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+          <property name="driverClassName" value="${jdbc.driverClassName}"/>
+          <property name="url" value="${jdbc.url}"/>
+          <property name="username" value="${jdbc.username}"/>
+          <property name="password" value="${jdbc.password}"/>
+          <!--配置sql监控和数据库密码加密操作-->
+          <property name="filters" value="stat,config" />
+          <property name="connectionProperties" value="config.decrypt=true"/>
+          <!-- ********************************************************************** -->
+      </bean>
+
+      <!-- 3.配置SqlSessionFactory -->
+      <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" >
+      <!-- 3.1配置连接池信息 -->
+      <property name="dataSource" ref="dataSource"/>
+      <!-- 3.2加载Mybatis配置文件 -->
+      <property name="configLocation" value="classpath:mybatis-config.xml" />
+      <!-- 3.3配置别名的扫描路径,需要配置的包的路径 -->
+      <property name="typeAliasesPackage" value="com._520it.wms.mapper"/>
+      <!-- 3.4加载映射文件,需要配置的是文件路径,支持通配符配置 -->
+      <property name="mapperLocations" value="classpath:com/_520it/wms/mapper/*Mapper.xml" />
+      </bean>
+
+      <!-- 4.配置事务管理器 what-->
+      <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+         <property name="dataSource" ref="dataSource" />
+      </bean>
+
+      <!-- 5.AOP相关配置,关联where和when -->
+      <aop:config>
+         <aop:pointcut expression="execution(* com._520it.wms.service.*.*(..))" id="wmsPointcut"/>
+         <aop:advisor advice-ref="wmsAdvice" pointcut-ref="wmsPointcut"/>
+      </aop:config>
+
+      <!-- 6.配置事务模板when,关联when和what -->
+      <tx:advice id="wmsAdvice" transaction-manager="transactionManager" >
+         <tx:attributes>
+           <tx:method name="get*" read-only="true"/>
+           <tx:method name="list*" read-only="true"/>
+           <tx:method name="query*" read-only="true"/>
+           <tx:method name="select*" read-only="true"/>
+           <tx:method name="*" />
+         </tx:attributes>
+      </tx:advice>
+
+
+
+    <!-- *****************************配置Service和DAO的Bean******************************************** -->
+
+      <import resource="classpath:applicationContext-Action.xml"/>
+      <import resource="classpath:applicationContext-Mapper.xml"/>
+      <import resource="classpath:applicationContext-Service.xml"/>
+      
+     
+</beans>

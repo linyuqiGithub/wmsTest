@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.wms.mapper.DepotMapper" >
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+  <resultMap id="BaseResultMap" type="com._520it.wms.domain.Depot" >
+    <id column="id" property="id"  />
+	<result column="name" property="name"  />
+	<result column="location" property="location"  />
+  </resultMap>
+  <delete id="delete" parameterType="long" >
+    delete from depot where id = #{id}
+  </delete>
+  <insert id="save" parameterType="com._520it.wms.domain.Depot" useGeneratedKeys="true" keyProperty="id" >
+    insert into depot 
+    (name,location)
+    values 
+    (#{name},#{location})
+  </insert>
+  <update id="update" parameterType="com._520it.wms.domain.Depot" >
+    update depot
+    set
+	    name=#{name},
+	    location=#{location}
+    where id = #{id}
+  </update>
+  <select id="get" resultMap="BaseResultMap" parameterType="long" >
+    select * from depot where id = #{id}
+  </select>
+  <select id="listAll" resultMap="BaseResultMap" >
+    select * from depot
+  </select>
+  <sql id="conditionSql">
+  	<where>
+  	</where>
+  </sql>
+  <select id="queryByConditionCount" resultType="long">
+  	select count(*) from depot
+  	<include refid="conditionSql"/>
+  </select>
+  <select id="queryByCondition" resultMap="BaseResultMap">
+  	select * from depot
+  	<include refid="conditionSql"/>
+  	limit #{start},#{pageSize}
+  </select>
+</mapper>

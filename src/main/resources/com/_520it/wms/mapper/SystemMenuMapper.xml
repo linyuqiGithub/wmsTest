@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.wms.mapper.SystemMenuMapper">
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+    <resultMap id="BaseResultMap" type="com._520it.wms.domain.SystemMenu">
+        <id column="id" property="id"/>
+        <result column="sn" property="sn"/>
+        <result column="url" property="url"/>
+        <result column="name" property="name"/>
+        <association property="parent"
+                     column="parent_id"
+                     select="com._520it.wms.mapper.SystemMenuMapper.get"/>
+    </resultMap>
+
+    <delete id="delete" parameterType="long">
+    delete from systemMenu where id = #{id}
+    </delete>
+
+    <insert id="save" parameterType="com._520it.wms.domain.SystemMenu" useGeneratedKeys="true" keyProperty="id">
+    insert into systemMenu 
+    (sn,url,name,parent_id)
+    values 
+    (#{sn},#{url},#{name},#{parent.id})
+    </insert>
+
+    <update id="update" parameterType="com._520it.wms.domain.SystemMenu">
+    update systemMenu
+    set
+	    sn=#{sn},
+	    url=#{url},
+	    name=#{name},
+	    parent_id=#{parent.id}
+    where id = #{id}
+    </update>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="long">
+    select * from systemMenu where id = #{id}
+    </select>
+
+    <select id="listAll" resultMap="BaseResultMap">
+    select * from systemMenu
+    </select>
+
+    <sql id="conditionSql">
+        <where>
+            <choose>
+                <when test="parentId == null">
+                    parent_id is NULL
+                </when>
+                <otherwise>
+                    parent_id = #{parentId}
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <select id="queryByConditionCount" resultType="long">
+        select count(*) from systemMenu
+        <include refid="conditionSql"/>
+    </select>
+
+    <select id="queryByCondition" resultMap="BaseResultMap">
+        select * from systemMenu
+        <include refid="conditionSql"/>
+        limit #{start},#{pageSize}
+    </select>
+
+    <select id="queryMenuByparentSn" resultMap="BaseResultMap">
+        select * from systemMenu WHERE parent_id = (
+           SELECT id FROM systemMenu WHERE sn = #{parentSn}
+        )
+    </select>
+
+    <select id="queryMenuByparentSnAndEmpId" resultMap="BaseResultMap">
+      SELECT * FROM systemmenu WHERE id in (
+          SELECT menu_id FROM role_menu WHERE role_id in(
+              SELECT roleId from employee_role WHERE empId = #{empId}
+            )
+   )  AND parent_id = (SELECT id FROM systemmenu WHERE sn = #{parentSn})
+    </select>
+
+    <select id="listChildrenMenu" resultMap="BaseResultMap">
+        select * from systemMenu WHERE parent_id is not null;
+    </select>
+
+    <select id="selectByRoleId" resultType="com._520it.wms.domain.SystemMenu">
+        select * from systemMenu WHERE id in (
+          SELECT menu_id FROM role_menu WHERE role_id = #{id}
+        )
+    </select>
+</mapper>

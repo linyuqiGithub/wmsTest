@@ -1,0 +1,4 @@
+<!-- 配置Action -->
+<bean id="${objectName}Action" class="${packageName}.web.action.${className}Action" scope="prototype">
+	<property name="${objectName}Service" ref="${objectName}Service"/>
+</bean>

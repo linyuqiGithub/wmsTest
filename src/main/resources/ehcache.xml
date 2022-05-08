@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache>
+  <!-- 内存不够时存储到硬盘中去(序列化的过程) -->
+  <diskStore path="java.io.tmpdir/nexus-ehcache"/>
+
+  <!-- 默认的存储策略 -->
+  <defaultCache
+      maxElementsInMemory="10000"
+      eternal="false"
+      timeToIdleSeconds="120"
+      timeToLiveSeconds="120"
+      maxElementsOnDisk="10000000"
+      diskExpiryThreadIntervalSeconds="120"
+      memoryStoreEvictionPolicy="LRU">
+    <persistence strategy="localTempSwap"/>
+  </defaultCache>
+
+  <!--
+  FIXME: We can not use pre-configured cache with eternal=true until this is fixed:
+  https://github.com/ehcache/ehcache-jcache/issues/40
+  -->
+<!--  <cache name="shiro-activeSessionCache"
+         maxElementsInMemory="10000"
+         eternal="true"
+         diskExpiryThreadIntervalSeconds="600">
+    <persistence strategy="localTempSwap"/>
+  </cache>-->
+
+</ehcache>

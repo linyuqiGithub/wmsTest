@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com._520it.wms.mapper.EmployeeMapper">
+    <!-- 给当前EmployeeMapper配置二级缓存 -->
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+   <resultMap type="com._520it.wms.domain.Employee" id="baseMap">
+        <id column="id" property="id" />
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="email" property="email"/>
+        <result column="age" property="age"/>
+        <result column="admin" property="admin"/>
+        <association property="dept" column="dept_id"
+         javaType="com._520it.wms.domain.Department" 
+         select="com._520it.wms.mapper.DepartmentMapper.get">     
+        </association>
+        <collection property="roles" column="id"
+        ofType="com._520it.wms.domain.Role"
+        select="com._520it.wms.mapper.RoleMapper.selectByEmployeeId">
+        </collection>
+   </resultMap>
+ 
+   <insert id="save" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+      INSERT INTO employee VALUES(null,#{name},#{password},#{email},#{age},#{admin},#{dept.id})
+   </insert>
+    
+    <update id="update">
+      update employee set name = #{name},email = #{email},age = #{age},admin = #{admin},deptId = #{dept.id} where id = #{id}
+    </update>
+ 
+    <delete id="delete">
+      delete from employee where id = #{id}
+    </delete>
+    
+    <select id="get" resultMap="baseMap">
+     select emp.*,dept.id as dept_id from employee emp 
+     JOIN department dept 
+     ON emp.deptId = dept.id where emp.id = #{id}
+    </select>
+    
+    <select id="list" resultMap="baseMap">
+     select emp.*,dept.id as dept_id from employee emp 
+     JOIN department dept 
+     ON emp.deptId = dept.id
+    </select>
+    
+    <sql id="where_sql">
+       <where>
+         <if test="keyword != null">
+           AND ( emp.name like concat("%",#{keyword},"%") OR emp.email like concat("%",#{keyword},"%"))
+         </if>       
+         <if test="deptId!=null and deptId>0">
+           AND dept.id = #{deptId}
+         </if>
+       </where>
+    </sql>
+    
+    <select id="queryByConditionCount" resultType="long">
+     select count(*) from employee emp 
+     JOIN department dept 
+     ON emp.deptId = dept.id
+     <include refid="where_sql"/>
+    </select>
+    
+    <select id="queryByCondition" resultMap="baseMap">
+      select emp.*,dept.id as dept_id from employee emp 
+      left JOIN department dept 
+       ON emp.deptId = dept.id
+     <include refid="where_sql"/>
+     limit #{start},#{pageSize}
+    </select>
+    
+    <insert id="inserRelation">
+       insert into employee_role values(#{empId},#{roleId})
+    </insert>
+    
+    <update id="deleteRelation">
+        delete from employee_role where empId = #{empId}
+    </update>
+    
+    <select id="login" resultMap="baseMap">
+       select emp.*,dept.id as dept_id from employee emp 
+      left JOIN department dept 
+       ON emp.deptId = dept.id
+       where emp.name = #{username} and emp.password = #{password}
+    </select>
+
+    <delete id="batchDelete">
+        DELETE FROM employee WHERE id IN
+        <foreach collection="list" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+ </mapper>
+  

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com._520it.wms.mapper.ChartMapper">
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+    <resultMap id="BaseResultMap" type="com._520it.wms.vo.OrderChartVO">
+        <result property="groupBy" column="groupBy"/>
+        <result property="totalNumber" column="totalNumber"/>
+        <result property="totalAmount" column="totalAmout"/>
+    </resultMap>
+
+    <sql id="conditionSql">
+        <where>
+            <if test="beginDate != null">
+                and vdate &gt; #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and vdate &lt; #{endDate}
+            </if>
+            <if test="keyword != null and keyword !=''">
+                and (p.sn LIKE concat('%',#{keyword},'%') or p.name LIKE concat('%',#{keyword},'%'))
+            </if>
+            <if test="supplierId > 0">
+                and bill.supplier_id = #{supplierId}
+            </if>
+            <if test="brandId > 0">
+                and p.brand_id = #{brandId}
+            </if>
+        </where>
+    </sql>
+    <sql id="conditionSql2">
+        <where>
+            <if test="beginDate != null">
+                and vdate &gt; #{beginDate}
+            </if>
+            <if test="endDate != null">
+                and vdate &lt; #{endDate}
+            </if>
+            <if test="keyword != null and keyword !=''">
+                and (p.sn LIKE concat('%',#{keyword},'%') or p.name LIKE concat('%',#{keyword},'%'))
+            </if>
+            <if test="clientId > 0">
+                and client_id = #{clientId}
+            </if>
+            <if test="brandId > 0">
+                and p.brand_id = #{brandId}
+            </if>
+        </where>
+    </sql>
+    <!--由于没有关联对象,其实可以直接使用resultType返回对应OrderChartVO,不需要resultMap，写了也无所谓-->
+    <!--下面的表连接是以表orderbillitem为主表进行连接-->
+    <!--高级查询中需要使用到的查询条件都需要对相关表进行连接-->
+    <!--注意不能使用#{groupBy}获取qo对象中的字段,#参数占位符只能用于where查询条件-->
+    <!--在select和group by语句中只能使用${}-->
+    <select id="queryOrderChart" resultMap="BaseResultMap">
+       SELECT ${groupBy} groupBy,
+       sum(item.number) totalNumber,
+       sum(item.amount) totalAmount
+       FROM orderbillitem item
+         LEFT JOIN orderbill bill ON item.bill_id = bill.id
+         LEFT JOIN supplier s ON bill.supplier_id = s.id
+         LEFT JOIN employee e ON bill.inputUser_id = e.id
+         LEFT JOIN product  p ON item.product_id = p.id
+         LEFT JOIN brand    b ON p.brand_id = b.id
+         <include refid="conditionSql"/>
+         GROUP BY ${groupBy}
+    </select>
+
+    <select id="querySaleChart" resultType="com._520it.wms.vo.SaleChartVO">
+        SELECT ${groupBy} groupBy,
+        sum(sc.number) totalNumber,
+        sum(sc.saleAmount) totalAmount,
+        sum(sc.saleAmount-sc.costAmount) grossProfit
+        FROM saleaccount sc
+        LEFT JOIN product p ON sc.product_id = p.id
+        LEFT JOIN employee e ON sc.saleman_id = e.id
+        LEFT JOIN client c ON sc.client_id = c.id
+        LEFT JOIN brand b ON p.brand_id = b.id
+        <include refid="conditionSql2"/>
+        GROUP BY ${groupBy}
+    </select>
+</mapper>
