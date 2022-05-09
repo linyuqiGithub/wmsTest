@@ -8,7 +8,7 @@ import java.util.Date;
 
 /**
  * 销售帐模型
- * Created by Administrator on 2017/6/8.
+ *
  */
 @Setter@Getter
 public class SaleAccount extends BaseDomain {

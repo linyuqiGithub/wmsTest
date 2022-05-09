@@ -17,9 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Administrator on 2017/6/7.
- */
 public class ChartServiceImpl implements IChartService {
     @Setter
     private ChartMapper chartMapper;

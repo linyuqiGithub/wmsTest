@@ -10,7 +10,6 @@ import java.util.Set;
 
 /**
  * 抽取业务层中表现层的代码
- * Created by Administrator on 2017/5/31.
  */
 public class UserContext {
     public static void setCurrentUser(Employee currentUser){

@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 
 /**
  * 销售报表vo对象
- * Created by Administrator on 2017/6/7.
  */
 @Setter@Getter
 public class SaleChartVO extends BaseDomain {

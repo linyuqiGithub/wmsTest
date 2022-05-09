@@ -4,9 +4,7 @@ import genertor.ObjectProp;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Created by Administrator on 2017/6/7.
- */
+
 @Setter@Getter@ObjectProp("客户管理")
 public class Client extends BaseDomain {
     @ObjectProp("客户编码")

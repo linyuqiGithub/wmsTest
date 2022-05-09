@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 /**
  * 货品明细(不需要单独的生成一套CRUD页面，因为订单明细是关联在订单上的)
- * Created by Administrator on 2017/6/3.
+ *
  */
 @Setter@Getter@ToString
 public class OrderbillItem extends BaseDomain {

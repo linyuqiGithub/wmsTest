@@ -12,9 +12,6 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Administrator on 2017/6/2.
- */
 @Setter@Getter@ObjectProp("货品")@ToString
 public class Product extends BaseDomain{
     @ObjectProp("编号")

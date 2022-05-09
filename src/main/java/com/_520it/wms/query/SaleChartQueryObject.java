@@ -7,9 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Created by Administrator on 2017/6/7.
- */
+
 @Setter
 public class SaleChartQueryObject extends QueryObject {
     public static Map<String,String> mapType = new LinkedHashMap<>();

@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * 处理报表的Mapper
- * Created by Administrator on 2017/6/7.
+ *
  */
 public interface ChartMapper {
     List<OrderChartVO> queryOrderChart(OrderChartQueryObject qo);

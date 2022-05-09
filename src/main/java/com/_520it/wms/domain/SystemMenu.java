@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**系统菜单模型
- * Created by Administrator on 2017/6/1.
+/**
+ * 系统菜单模型
  */
 @Setter@Getter@ObjectProp("系统菜单")@ToString
 public class SystemMenu extends BaseDomain {

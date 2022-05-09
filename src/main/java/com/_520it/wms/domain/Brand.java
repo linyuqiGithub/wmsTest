@@ -4,9 +4,7 @@ import genertor.ObjectProp;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Created by Administrator on 2017/6/2.
- */
+
 @Setter@Getter@ObjectProp("品牌")
 public class Brand extends BaseDomain{
     @ObjectProp("编号")

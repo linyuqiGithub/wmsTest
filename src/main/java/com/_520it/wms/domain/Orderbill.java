@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Administrator on 2017/6/2.
- */
+
 @Setter@Getter@ObjectProp("产品订单")
 public class Orderbill extends BaseDomain {
 

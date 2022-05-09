@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Administrator on 2017/6/7.
+ *
  */
 @Setter@Getter@ObjectProp("销售出库单")
 public class StockOutcomebill extends BaseDomain {

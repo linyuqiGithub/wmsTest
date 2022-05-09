@@ -22,9 +22,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Administrator on 2017/6/7.
- */
 public class ChartAction extends BaseAction {
     @Setter
     private IChartService chartService;

@@ -4,9 +4,7 @@ import genertor.ObjectProp;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Created by Administrator on 2017/6/5.
- */
+
 @Setter@Getter@ObjectProp("仓库管理")
 public class Depot extends BaseDomain {
     @ObjectProp("仓库名称")

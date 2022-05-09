@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Created by Administrator on 2017/6/2.
+ *
  */
 @Setter@Getter@ObjectProp("供应商")
 public class Supplier extends BaseDomain {

@@ -7,9 +7,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.Date;
 
-/**
- * Created by Administrator on 2017/6/6.
- */
+
 @Setter@Getter@ObjectProp("产品库存")
 public class ProductStock extends BaseDomain{
     @ObjectProp("库存价格")

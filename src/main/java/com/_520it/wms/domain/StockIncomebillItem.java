@@ -6,7 +6,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 /**
- * Created by Administrator on 2017/6/5.
+ *
  */
 @Setter@Getter
 public class StockIncomebillItem extends BaseDomain {

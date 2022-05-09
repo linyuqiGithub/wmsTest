@@ -5,11 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
-/**
- * @description:
- * @author: alan
- * @time: 2020/9/27 18:01
- */
 public class DownloadFileUtil {
     /**
      * 下载文件

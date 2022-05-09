@@ -6,7 +6,6 @@ import lombok.ToString;
 
 /**
  * 系统菜单的vo对象
- * Created by Administrator on 2017/6/1.
  */
 @Setter@Getter@ToString
 public class SystemMenuVO extends BaseDomain{
